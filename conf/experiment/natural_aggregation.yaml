@@ -1,0 +1,17 @@
+# @package _global_
+defaults:
+  - natural_base
+  - _self_
+
+warm_epochs: 5
+epochs: 5
+last_layer_iterations: 0
+
+debug:
+  loss: aggregation
+  act_place: all
+  class_specific_penalization: false
+
+model:
+  coefs:
+    debug: 100

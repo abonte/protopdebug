@@ -1,0 +1,12 @@
+# @package _global_
+defaults:
+  - /data/cub200_clean_top20
+  - _self_
+
+wandb: False
+last_layer_iterations: 10
+
+model:
+  num_prototypes_per_class: 2
+  base_architecture: vgg16
+  topk_k: 0.05

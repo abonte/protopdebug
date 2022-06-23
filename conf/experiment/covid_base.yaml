@@ -1,0 +1,14 @@
+# @package _global_
+defaults:
+  - /data/covid
+  - _self_
+
+wandb: False
+warm_epochs: 15
+epochs: 15
+last_layer_iterations: 0
+
+model:
+  num_prototypes_per_class: 2
+  base_architecture: vgg19
+  topk_k: 0.05

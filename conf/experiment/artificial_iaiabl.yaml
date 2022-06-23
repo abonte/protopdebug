@@ -1,0 +1,12 @@
+# @package _global_
+defaults:
+  - artificial_base
+  - /data/cub200_artificial
+  - _self_
+
+debug:
+  loss: iaiabl
+
+model:
+  coefs:
+    debug: 0.001

@@ -1,0 +1,11 @@
+# @package _global_
+defaults:
+  - _self_
+
+wandb: true
+warm_epochs: 15
+epochs: 15
+
+model:
+  base_architecture: vgg16
+  topk_k: 1

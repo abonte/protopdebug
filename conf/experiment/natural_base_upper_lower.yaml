@@ -1,0 +1,11 @@
+# @package _global_
+defaults:
+  - natural_base
+  - _self_
+
+warm_epochs: 45
+epochs: 45
+push_epochs:
+  - 14
+  - 29
+  - 44

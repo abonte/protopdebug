@@ -1,0 +1,8 @@
+# @package _global_
+defaults:
+  - natural_base_upper_lower
+  - _self_
+
+data:
+  train_on_segmented_image: True
+  test_on_segmented_image: True

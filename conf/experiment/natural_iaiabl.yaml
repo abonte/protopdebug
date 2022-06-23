@@ -1,0 +1,12 @@
+# @package _global_
+defaults:
+  - natural_base_upper_lower
+  - _self_
+
+debug:
+  loss: iaiabl
+  fine_annotation: 0.20
+
+model:
+  coefs:
+    debug: 0.001

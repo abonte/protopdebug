@@ -1,0 +1,22 @@
+# @package _global_
+defaults:
+  - covid_base
+  - /data/covid
+  - _self_
+
+
+epochs: 2
+warm_epochs: 2
+
+debug:
+  class_specific_penalization: False
+  loss: aggregation
+  act_place: all
+
+model:
+  coefs:
+    debug: 100
+    rem: 10
+    clst: 0.1
+    sep: 0.001
+    crs_ent: 0.4

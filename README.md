@@ -9,7 +9,7 @@ The code in this repository is an adaptation of the code in the following reposi
 
 |                                        | Repository                                 | License                                                                                                         |
 |----------------------------------------|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
-| ProtoPNet                              | https://github.com/cfchen-duke/ProtoPNet   | [See License](https://github.com/cfchen-duke/ProtoPNet/blob/81bf2b70cb60e4f36e25e8be386eb616b7459321/LICENSE)   |
+| ProtoPNet                              | https://github.com/cfchen-duke/ProtoPNet   | [See License](https://github.com/cfchen-duke/ProtoPNet/blob/81bf2b70cb60e4f36e25e8be386eb616b7459321/LICENSE)   |  
 | IAIA-BL loss                           | https://github.com/alinajadebarnett/iaiabl | [See License](https://github.com/alinajadebarnett/iaiabl/blob/04efedb3f6bd0b4495e90b4d4bfcbeacfde0db57/LICENSE) |
 | Covid data processing and data loaders | https://github.com/suinleelab/cxr_covid    | [See License](https://github.com/suinleelab/cxr_covid/blob/9a48838a39209583d968fa211dbe0e542eab8803/license.md) |
 
@@ -33,7 +33,7 @@ covid-19+: a large annotated dataset of rx and ct images from covid-19 patients.
 ## Requirements
 
 - Python 3.9.7
-- Pytorch 1.9.0
+- Pytorch 1.11.0
 - cudatoolkit=11.3
 
 ## Installation
@@ -41,8 +41,8 @@ covid-19+: a large annotated dataset of rx and ct images from covid-19 patients.
 Clone the repository
 
 ```bash
-git clone https://github.com/abonte/protopdebug ProtoPDebug
-cd ProtoPDebug
+git clone https://github.com/abonte/protopdebug  ProtoPDebug
+cd ProtoPNet
 ```
 
 Create a new environment with [Conda](https://docs.conda.io/en/latest/)
@@ -64,7 +64,7 @@ conda activate protopnet
 ├── local_analysis.py      // find the nearest prototypes to all test images
 ├── old_code               // code of the original repository, but not used in this
 ├── plot_stat.py           // plot statistics about an experiment
-├── pretrained_models      // pretrained model downloaded durint training
+├── pretrained_models      // pre-trained model downloaded during the training
 ├── saved_models           // results of the experiments
 ├── settings.py            // default values of the models and datasets parameters
 ├── tests                  // test suite
@@ -90,7 +90,7 @@ Run the following command to add the synthetic confound to the first five classe
 python data_preprocessing.py --seed 0 bird -i datasets/CUB_200_2011 --classes 001 002 003 004 005
 ```
 
-The data pipeline perform the following operations:
+The data pipeline performs the following operations:
  1. Crop the images using information from `bounding_boxes.txt` (included in the dataset)
  2. Split the cropped images into training and test sets, using `train_test_split.txt` (included in the dataset)
  3. Put the cropped training images in the directory `./datasets/cub200_cropped/train_cropped/`
@@ -134,7 +134,7 @@ Use the scripts `make_csv_bimcv_negative.py ` and `make_h5.py` of this repositor
 instead of the ones in the original repository. 
 Put the resulting `*.h5` in the corresponding folders in the `datasets/covid` folder.
 
-Only a subset of the data have been used, see the following list of which parts have been downloaded:
+Only a subset of the data has been used, see the following list of which parts have been downloaded:
 
 - _ChestX-ray14_: `images_001.tar.gz`, `images_002.tar.gz`
 - _GitHub-COVID_: the complete repository
@@ -193,10 +193,12 @@ feature, add `wandb=true` to the command line when running the script.
 ## Evaluation
 
 ```bash
-./plot.sh <PATH-TO-MODEL>
+./plot.sh <PATH-TO-MODEL> "<LIST-OF-CLASSES>"
 ```
 
-Substitute `PATH-TO-MODEL with the path to the model you want to analyze
+Substitute `PATH-TO-MODEL` with the path to the model you want to analyze.
+Specify the list of (0-based) index of the classes to use for the evaluation 
+(Cub200: "0 8 14 6 15", Covid dataset: "0 1").
 
 The script performs the following operations:
   - plot the statistics of the experiment;
@@ -213,66 +215,75 @@ The script performs the following operations:
 ./run_artificial_confound.sh
 ```
 
+***
 ### Experiment 2
+
+#### ProtoPDebug
 
 Since human intervention is required in the debugging loop, follow these steps to run _ProtoPDebug_:
 
-1. First round, without any human supervision
+1. **First round**, without any human supervision
+
    ```bash
    python main.py experiment_name=\"first_round\" +experiment=natural_base
    ```
 
-   1. Give supervision to the learned prototypes.
+2. Give **supervision** to the learned prototypes.
 
-      a) find the nearest patches to each prototype, substitute `<PATH-TO-MODEL>` with the
+      _a)_ find the nearest patches to each prototype, substitute `<PATH-TO-MODEL>` with the
       path to the model of the previous round
 
       ```bash
       python global_analysis.py <PATH-TO-MODEL>
       ```
    
-      b) manually select the patches that represent the confounds you want to forbid
+      _b)_ manually select the patches that represent the confounds you want to forbid
 
       ```bash
       python extract_confound.py interactive <PATH-TO-MODEL> -classes 0 8 14 6 15 -n-img 10
       ```
-      Only the prototypes of the classes specify as parameter are presented (See main paper
-   for the details on how have been selected these 5 classes).
-      For each patch, you will have to chose one of these options:
-      - y (yes) the prototype activate to a confound
-      - n (next) skip and see the next image
-      - p (patch) the automatically extracted patch (left most image) correctly incorporates only the confound
-      - r (remember) the activation is on patches of the image that you want to remember
-      The selected images are placed in two folders: `tmp_forbidden_conf` and `tmp_remember_patch`.
-      The patches from the images selected with _y_ or _r_ must be extracted manually, e.g.,
-      using photo editor, and saved in the same folder.
+      Only the prototypes of the specified classes are presented for the debugging step.
+      (See main paper for the details on how have been selected these 5 classes).
+      For each patch, you will have to choose one of these options:
+      - `y` (yes) the prototype activates to a confound
+      - `n` (next) skip and see the next image
+      - `p` (patch) the automatically extracted patch (left most image) correctly incorporates only the confound
+      - `r` (remember) the activation is on patches of the image that you want to remember
       
-      c) move the patches in the dataset folder
+      The selected images are placed in two folders: `tmp_forbidden_conf` and `tmp_remember_patch`.
+      The patches from the images selected with _y_ or _r_ must be extracted manually 
+      and saved in the same folder.
+      
+      _c)_ move the patches in the dataset folder
+
       ```bash
       python extract_confound.py move <PATH-TO-MODEL-FOLDER>
       ```
       The script takes the patches in `tmp_forbidden_conf` and `tmp_remember_patch` (the
       filenames must contain class, prototype and image id formatted like `c=0_p=1_i=2.png`)
       and adds them to `datasets/cub200_cropped/clean_top_20/forbidden_prototypes` and 
-   `datasets/cub200_cropped/clean_top_20/remembering_prototypes` respectively.
+      `datasets/cub200_cropped/clean_top_20/remembering_prototypes` respectively.
 
-2. Subsequent round, with the supervision on the confounds. The training will start from
-   from the model of the previous round by substituting in the following command 
-`<<PATH_TO_MODEL>>` with the path to the saved model of the previous round.
+3. **Subsequent rounds**, with the supervision on the confounds. The training will start
+   from the model of the previous round by substituting 
+   `<<PATH_TO_MODEL>>` with the path to the saved model of the previous round.
 
    ```bash
    python main.py experiment_name=\"second_round\" +experiment=natural_aggregation debug.path_to_model=\"<<PATH_TO_MODEL>>\"
    ```
 
-3. Go back to 2) and repeat.
+4. Go back to 2) and repeat.
 
 
-To run _IAIA-BL_, _ProtoPNet clean_, _ProtoPNet_:
+#### IAIA-BL, ProtoPNet clean, ProtoPNet
+
+Run:
 
 ```bash
 ./run_natural_confound.sh
 ```
 
+***
 ### Experiment 3
 
 Follow the same steps of Experiment 2

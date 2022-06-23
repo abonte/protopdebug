@@ -1,0 +1,18 @@
+# @package _global_
+defaults:
+  - artificial_base
+  - /data/cub200_artificial
+  - _self_
+
+debug:
+  loss: aggregation
+  act_place: center
+  class_specific_penalization: true
+  classes:
+    - 0
+    - 1
+    - 4
+
+model:
+  coefs:
+    debug: 100

@@ -1,0 +1,35 @@
+defaults:
+  - myconfig
+#  - my_run_dir
+  - _self_
+
+
+hydra:
+  run:
+    dir: 'saved_models/${data.name}/${experiment_name}__${model.base_architecture}__${data.name}__e=${epochs}__we=${warm_epochs}__λfix=${model.coefs.debug}__${hydra.job.override_dirname}'
+  sweep:
+    dir: 'saved_models/${data.name}/${experiment_name}__${model.base_architecture}__${data.name}__e=${epochs}__we=${warm_epochs}__loss=${debug.loss}_fa=${debug.fine_annotation}'
+    subdir: ${hydra.job.override_dirname}
+  job:
+    config:
+      override_dirname:
+        item_sep: '__'
+        exclude_keys:
+          - experiment_name
+          - warm_epochs
+          - epochs
+          - push_epochs
+          - push_start
+          - last_layer_iterations
+          - data
+          - cpu
+          - gpuid
+          - wandb
+          - model.base_architecture
+          - debug.path_to_model
+          - debug.auto_path_to_model
+          - debug.classes
+          - debug.protos
+          - data.train_push_batch_size
+          - data.train_batch_size
+          - data.test_batch_size

@@ -1,0 +1,24 @@
+name: protopnet
+channels:
+  - defaults
+  - conda-forge
+  - pytorch
+dependencies:
+  - opencv
+  - cudatoolkit=11.3
+  - python-dotenv
+  - pytorch
+  - torchvision
+  - prettytable
+  - requests
+  - torchaudio
+  - wandb
+  - tqdm
+  - scikit-learn
+  - matplotlib
+  - pillow
+  - python=3.9
+  - pandas
+  - hydra-core
+
+
