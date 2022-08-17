@@ -204,6 +204,7 @@ class CovidDataModule:
     def prepare_data(self, loss_image=False):
         labels = 'chestx-ray14'
         if self.global_analysis:
+            self.class_weights = None
             trainpushds = DomainConfoundedDataset(
                 ChestXray14H5Dataset(fold='train', labels=labels,
                                      random_state=self.seed, normalize=False,
