@@ -1,4 +1,5 @@
 import time
+from typing import Optional
 
 import numpy as np
 import torch
@@ -6,6 +7,7 @@ import torch.nn as nn
 from sklearn.metrics import classification_report, accuracy_score
 from sklearn.metrics._classification import confusion_matrix, \
     precision_recall_fscore_support
+from torch.optim import Optimizer
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 import torch.nn.functional as F
@@ -277,7 +279,7 @@ def _compute_total_loss(model, output, data,
                         loss_loader,
                         positive_loss_images_loader,
                         use_l1_mask, total_loss_component,
-                        device, class_weights):
+                        device, class_weights=None):
     label = data[1]
     cross_entropy = torch.nn.functional.cross_entropy(output, label.to(device),
                                                       weight=class_weights)
@@ -338,11 +340,16 @@ def _compute_total_loss(model, output, data,
     return loss
 
 
-def _train_or_test(model, dataloader, device, optimizer=None,
-                   use_l1_mask=True,
-                   coefs=None, debug_cfg=None,
-                   positive_loss_loader=None, log=print,
-                   loss_loader=None, dry_run=False, class_weights=None):
+def _train_or_test(model: PPNet, dataloader, device,
+                   optimizer: Optional[Optimizer] = None,
+                   use_l1_mask: bool = True,
+                   coefs: Optional[settings.ModelConfig.Lambdas] = None,
+                   debug_cfg=None,
+                   positive_loss_loader=None,
+                   log=print,
+                   loss_loader=None,
+                   dry_run: bool = False,
+                   class_weights=None):
     """
     model: the multi-gpu model
     optimizer: if None, will be test evaluation
@@ -483,8 +490,10 @@ def _get_grad_values(model: PPNet, total_grad: dict) -> dict:
     return total_grad
 
 
-def train(model, dataset, device, optimizer, debug_cfg, coefs=None,
-          log=print, dry_run=False):
+def train(model, dataset, device, optimizer,
+          debug_cfg: settings.Debug,
+          coefs: Optional[settings.ModelConfig.Lambdas] = None,
+          log=print, dry_run: bool = False):
     assert (optimizer is not None)
 
     log.info('\ttrain')
@@ -497,7 +506,8 @@ def train(model, dataset, device, optimizer, debug_cfg, coefs=None,
                           log=log,
                           loss_loader=dataset.loss_loader,
                           positive_loss_loader=dataset.positive_loss_loader,
-                          device=device, dry_run=dry_run,
+                          device=device,
+                          dry_run=dry_run,
                           class_weights=dataset.class_weights)
 
 

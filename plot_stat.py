@@ -229,11 +229,12 @@ def plot_multiple_experiments(traces: list, output_path: str):
                              markevery=(i%3, 3),
                              )
 
-            axs.legend(ncol=2)
+            axs.legend(ncol=2, fontsize='large')
             # axs.set_title(f'{state} {metric_name}')
-            axs.set_xlabel('training epochs')
-            axs.set_ylabel(METRICS[metric_name])
+            axs.set_xlabel('training epochs', fontsize='xx-large')
+            axs.set_ylabel(METRICS[metric_name], fontsize='xx-large')
             axs.xaxis.set_major_locator(MaxNLocator(integer=True))
+            plt.yticks(fontsize='x-large')
             fig.savefig(os.path.join(output_path,
                                      f'{dataset_name}_{state}_{metric_name}_multiple_stat.pdf'),
                         bbox_inches='tight',
@@ -516,13 +517,13 @@ def load_experiments(modeldirs: list) -> list:
                     if not os.path.exists(
                             os.path.join(path, repetition, 'stat.pickle')):
                         print(
-                            f'Warning: skip {os.path.basename(os.path.join(path, repetition))}')
+                            f'Warning: skip "{os.path.join(path, repetition)}"')
                         continue
                     stat = load(os.path.join(path, repetition, 'stat.pickle'))
                     stat['cfg'] = OmegaConf.create(stat['cfg'])
                     trace_repetitions.append(stat)
             if len(trace_repetitions) == 0:
-                print(f'Warning: skip {path}')
+                print(f'Warning: skip "{path}"')
                 continue
             traces.append(trace_repetitions)
             # shape list traces (n_experiments, n_repetition, [train, test], epochs, metric)

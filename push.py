@@ -120,7 +120,7 @@ def push_prototypes(dataloader: DataLoader,  # pytorch dataloader (must be unnor
 
     prototype_network_parallel.module.prototype_vectors.data.copy_(
         torch.tensor(prototype_update, dtype=torch.float32).to(device))
-    prototype_network_parallel.cuda()
+    prototype_network_parallel.to(device)
     end = time.time()
     log('\tpush time: \t{0}'.format(end - start))
 

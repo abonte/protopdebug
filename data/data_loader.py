@@ -189,7 +189,8 @@ class DataModule:
                      loss_loader=self.loss_dataloader(),
                      positive_loss_loader=self.positive_loss_dataloader(),
                      num_classes=self.cfg_data.num_classes,
-                     kernel_set_loader=self.kernelset_dataloader())
+                     kernel_set_loader=self.kernelset_dataloader(),
+                     class_weights=None)
 
 
 class CovidDataModule:
@@ -252,11 +253,11 @@ class CovidDataModule:
                                                 random_state=0,
                                                 normalize=False)
 
-            self.class_weights = class_weight.compute_class_weight(
+            self.class_weights = torch.from_numpy(class_weight.compute_class_weight(
                 'balanced',
                 classes=[0, 1],
                 y=np.hstack(
-                    [np.ones(len(covid_positive)), np.zeros(len(covid_negative))])) \
+                    [np.ones(len(covid_positive)), np.zeros(len(covid_negative))]))) \
                 .to(self.device)
 
             trainpushds = DomainConfoundedDataset(
