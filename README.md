@@ -1,9 +1,6 @@
 # Concept-level Debugging of Part-Prototype Networks
 ![](debugging-loop.png)
 
-Implementation of the paper
-
-Bontempelli, A., Teso, S., Giunchiglia, F., & Passerini, A. (2022). _Concept-level Debugging of Part-Prototype Networks_. [arXiv preprint arXiv:2205.15769](https://arxiv.org/abs/2205.15769).
 
 The code in this repository is an adaptation of the code in the following repositories:
 
@@ -308,14 +305,3 @@ python main.py experiment_name=\"second_round\"
 ```
 
 ## How to cite
-
-```
-@article{bontempelli2022concept,
-  title={Concept-level Debugging of Part-Prototype Networks},
-  author={Bontempelli, Andrea and Teso, Stefano and Giunchiglia, Fausto and Passerini, Andrea},
-  url = {https://arxiv.org/abs/2205.15769},
-  doi = {10.48550/ARXIV.2205.15769},
-  journal={arXiv preprint arXiv:2205.15769},
-  year={2022}
-}
-```
