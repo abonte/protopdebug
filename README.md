@@ -242,15 +242,21 @@ Since human intervention is required in the debugging loop, follow these steps t
       ```bash
       python extract_confound.py interactive <PATH-TO-MODEL> -classes 0 8 14 6 15 -n-img 10
       ```
+   
       Only the prototypes of the specified classes are presented for the debugging step.
       (See main paper for the details on how have been selected these 5 classes).
+      The command extracts the most activated patches from the most activate images of
+      each prototype associated to the 5 classes.
       For each patch, you will have to choose one of these options:
-      - `y` (yes) the prototype activates to a confound
-      - `n` (next) skip and see the next image
-      - `p` (patch) the automatically extracted patch (left most image) correctly incorporates only the confound
-      - `r` (remember) the activation is on patches of the image that you want to remember
+      - `y` (yes) the prototype activation overlays _exclusively (or very nearly so) the background_.
+         The activation cut-out is added to the _forbidden concepts_
+      - `n` (next) the prototype activation overlays _some part of the bird_. 
+        No action is performed and go to the next patch
+      - `r` (remember) the prototype activation overlays some part of the bird and the concept
+        is added to the concepts to be _remembered_ (useful when you use the remembering loss).
       
-      The selected images are placed in two folders: `tmp_forbidden_conf` and `tmp_remember_patch`.
+      The cut-out of the selected patched are placed in two folders `tmp_forbidden_conf` and `tmp_remember_patch`,
+      inside the experiment folder.
       The patches from the images selected with _y_ or _r_ must be extracted manually 
       and saved in the same folder.
       

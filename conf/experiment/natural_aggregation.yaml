@@ -5,7 +5,7 @@ defaults:
 
 warm_epochs: 5
 epochs: 5
-last_layer_iterations: 0
+last_layer_iterations: 2
 
 debug:
   loss: aggregation

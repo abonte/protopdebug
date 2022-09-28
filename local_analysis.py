@@ -1,15 +1,14 @@
 ##### MODEL AND DATA LOADING
 import argparse
 import copy
+import logging
 import os
 import re
-import logging
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import torch.utils.data
-import torchvision.transforms as transforms
-from PIL import Image
 from omegaconf.omegaconf import OmegaConf
 from sklearn.metrics._plot.confusion_matrix import ConfusionMatrixDisplay
 from torch.autograd import Variable
@@ -18,9 +17,10 @@ import settings
 import train_and_test as tnt
 from data.data_loader import DATASETS
 from find_nearest import compute_heatmap
-from helpers import makedir, find_high_activation_crop, load, create_logger, dump
+from helpers import makedir, find_high_activation_crop, load, create_logger, dump, \
+    imsave_with_bbox
 from main import make_or_load_model
-from preprocess import mean, std, undo_preprocess_input_function
+from preprocess import undo_preprocess_input_function
 
 
 def save_preprocessed_img(fname, preprocessed_imgs, index=0):
@@ -61,19 +61,6 @@ def save_prototype_original_img_with_bbox(fname, epoch, index,
     p_img_rgb = p_img_bgr[..., ::-1]
     p_img_rgb = np.float32(p_img_rgb) / 255
     plt.imsave(fname, p_img_rgb)
-
-
-def imsave_with_bbox(fname, img_rgb, bbox_height_start, bbox_height_end,
-                     bbox_width_start, bbox_width_end, color=(0, 255, 255)):
-    img_bgr_uint8 = cv2.cvtColor(np.uint8(255 * img_rgb), cv2.COLOR_RGB2BGR)
-    cv2.rectangle(img_bgr_uint8, (bbox_width_start, bbox_height_start),
-                  (bbox_width_end - 1, bbox_height_end - 1),
-                  color, thickness=2)
-    img_rgb_uint8 = img_bgr_uint8[..., ::-1]
-    img_rgb_float = np.float32(img_rgb_uint8) / 255
-    # plt.imshow(img_rgb_float)
-    # plt.axis('off')
-    plt.imsave(fname, img_rgb_float)
 
 
 def main(test_image_path, test_image_label, load_model_dir, load_model_name,

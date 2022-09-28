@@ -8,26 +8,13 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
-from helpers import makedir, find_high_activation_crop, dump
+from helpers import makedir, find_high_activation_crop, dump, imsave_with_bbox
 from receptive_field import compute_rf_prototype
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def imsave_with_bbox(fname, img_rgb, bbox_height_start, bbox_height_end,
-                     bbox_width_start, bbox_width_end, color=(0, 255, 255)):
-    img_bgr_uint8 = cv2.cvtColor(np.uint8(255 * img_rgb), cv2.COLOR_RGB2BGR)
-    cv2.rectangle(img_bgr_uint8, (bbox_width_start, bbox_height_start),
-                  (bbox_width_end - 1, bbox_height_end - 1),
-                  color, thickness=2)
-    img_rgb_uint8 = img_bgr_uint8[..., ::-1]
-    img_rgb_float = np.float32(img_rgb_uint8) / 255
-    # plt.imshow(img_rgb_float)
-    # plt.axis('off')
-    plt.imsave(fname, img_rgb_float)
-
-
-def compute_heatmap(upsampled_act, heatmap_vmin=None, heatmap_vmax=None):
+def compute_heatmap(upsampled_act):
     """Overlay (upsampled) activation on original image and save the result"""
 
     rescaled_act_pattern = upsampled_act - np.amin(
@@ -68,7 +55,7 @@ class ImagePatchInfo:
         return self.negative_distance < other.negative_distance
 
 
-def act_pr(activation_map_, fine_annotation, percentile):
+def act_pr(activation_map_, fine_annotation, percentile: int):
     activation_map_ = cv2.resize(activation_map_,
                                  dsize=fine_annotation.shape,
                                  interpolation=cv2.INTER_CUBIC)
@@ -119,11 +106,10 @@ def find_k_nearest_patches_to_prototypes(dataloader: DataLoader,
         # search_batch_input [n_images, channel, img_size, img_size]
         search_batch_input = data[0]
         search_y = data[1]
+        fine_annotations = None
         if len(data) > 3 and False:
             if torch.all(data[4]):
                 fine_annotations = data[3]
-        else:
-            fine_annotations = None
 
         print(f'batch {idx}')
 
@@ -146,9 +132,10 @@ def find_k_nearest_patches_to_prototypes(dataloader: DataLoader,
         for img_idx, distance_map in enumerate(proto_dist_):
             for j in range(n_prototypes):
                 # consider only images of the same class of j
-                if not prototype_network_parallel.module.prototype_class_identity[j,search_y[img_idx]]:
+                if not prototype_network_parallel.module.prototype_class_identity[
+                    j, search_y[img_idx]]:
                     continue
-                    
+
                 # find the closest patches in this batch to prototype j
                 closest_patch_distance_to_prototype_j = np.amin(distance_map[j])
 
@@ -257,7 +244,7 @@ def _save_images_in_heap(heaps: list, j: int, root_dir_for_saving_images: str) -
                    arr=patch.original_img, vmin=0.0, vmax=1.0)
 
         # overlay (upsampled) activation on original image and save the result
-        img_size = patch.original_img.shape[0]
+        img_size: int = patch.original_img.shape[0]
         upsampled_act_pattern = cv2.resize(patch.act_pattern,
                                            dsize=(img_size, img_size),
                                            interpolation=cv2.INTER_CUBIC)
@@ -287,8 +274,7 @@ def _save_images_in_heap(heaps: list, j: int, root_dir_for_saving_images: str) -
             #            arr=overlayed_patch, vmin=0.0, vmax=1.0)
 
         # save the highly activated patch
-        high_act_patch_indices = find_high_activation_crop(
-            upsampled_act_pattern)
+        high_act_patch_indices = find_high_activation_crop(upsampled_act_pattern)
         high_act_patch = patch.original_img[
                          high_act_patch_indices[0]:high_act_patch_indices[1],
                          high_act_patch_indices[2]:high_act_patch_indices[3], :]
