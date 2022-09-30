@@ -306,6 +306,20 @@ python main.py experiment_name=\"second_round\"
                     +experiment=covid_aggregation
                     debug.path_to_model=\"<PATH_TO_MODEL>\"
 ```
+***
+### User experiment
+
+The generated images and the answers of the experiment with real user are in the 
+`user_experiment` folder. The csv files contains the answers for each image: 
+
+- 1: 'some part of the bird'
+- 0: 'exclusively (or very nearly so) the background'
+
+The image names follow the pattern 
+`<number_of_the_question>Hexp_c=<idx_of_the_class>_p=<idx_of_the_prototype>_i=<idx_of_the_image>.png`.
+For instance, `01Hexp_c=0_p=0_i=2_c.png`.
+The folder `user_experiment/cuts` contains the cut-out for each image.
+
 
 ## How to cite
 
