@@ -68,6 +68,7 @@ conda activate protopnet
 ├── saved_models           // results of the experiments
 ├── settings.py            // default values of the models and datasets parameters
 ├── tests                  // test suite
+├── user_experiment        // data about the experiment with real users
 └── visualization          // script for plotting
 ```
 
@@ -320,6 +321,27 @@ The image names follow the pattern
 For instance, `01Hexp_c=0_p=0_i=2_c.png`.
 The folder `user_experiment/cuts` contains the cut-out for each image.
 
+
+***
+### Results
+
+The learned models can be accessed on Zenodo at https://zenodo.org/record/7126021. 
+The zip file contains the models for each of the three experiments. 
+These files can be found in the run folders:
+
+- `config.json`: configuration file
+- `stat.pickle`: statistics about the run (e.g., F1, loss,...)
+- `img`: projection of prototypes at different epochs
+- `prototypes_activation_precision_testset.pickle`: activation precision values on test set
+- `*.pth.tar`: the trained model
+- `forbidden_prototypes`: the supervision given to the model about the patches to forget
+- `remembering_prototypes`: the supervision given to the model about the patches to remember
+
+To reproduce the figures in the paper, run
+
+```bash
+./plot_zenodo_results.sh
+```
 
 ## How to cite
 
