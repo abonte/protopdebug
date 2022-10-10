@@ -325,7 +325,7 @@ The folder `user_experiment/cuts` contains the cut-out for each image.
 ***
 ### Results
 
-The learned models can be accessed on Zenodo at https://zenodo.org/record/7126021. 
+The learned models can be accessed on Zenodo at https://zenodo.org/record/7181267. 
 The zip file contains the models for each of the three experiments. 
 These files can be found in the run folders:
 
@@ -345,7 +345,7 @@ To reproduce the figures in the paper, run
 
 ## How to cite
 
-```
+```bibtex
 @article{bontempelli2022concept,
   title={Concept-level Debugging of Part-Prototype Networks},
   author={Bontempelli, Andrea and Teso, Stefano and Giunchiglia, Fausto and Passerini, Andrea},
