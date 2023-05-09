@@ -11,6 +11,7 @@ hydra:
     dir: 'saved_models/${data.name}/${experiment_name}__${model.base_architecture}__${data.name}__e=${epochs}__we=${warm_epochs}__loss=${debug.loss}_fa=${debug.fine_annotation}'
     subdir: ${hydra.job.override_dirname}
   job:
+    chdir: True
     config:
       override_dirname:
         item_sep: '__'

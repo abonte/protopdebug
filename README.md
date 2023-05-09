@@ -1,9 +1,12 @@
 # Concept-level Debugging of Part-Prototype Networks
+
 ![](debugging-loop.png)
 
 Implementation of the paper
 
-Bontempelli, A., Teso, S., Giunchiglia, F., & Passerini, A. (2022). _Concept-level Debugging of Part-Prototype Networks_. [arXiv preprint arXiv:2205.15769](https://arxiv.org/abs/2205.15769).
+Bontempelli, A., Teso, S., Giunchiglia, F., & Passerini, A. (2023). _Concept-level Debugging of Part-Prototype Networks_. [![arXiv](https://img.shields.io/badge/arXiv-2205.15769-b31b1b.svg)](https://arxiv.org/abs/2205.15769)
+
+Accepted for publication at [ICLR 2023](https://openreview.net/forum?id=oiwXWPDTyNk) ([slides](slides/protopdebug___iclr23.pdf), [Poster](slides/poster_iclr23.pdf)).
 
 The code in this repository is an adaptation of the code in the following repositories:
 
@@ -14,6 +17,7 @@ The code in this repository is an adaptation of the code in the following reposi
 | Covid data processing and data loaders | https://github.com/suinleelab/cxr_covid    | [See License](https://github.com/suinleelab/cxr_covid/blob/9a48838a39209583d968fa211dbe0e542eab8803/license.md) |
 
 Used datasets:
+
 - **CUB-200-2011**: Wah, C., Branson, S., Welinder, P., Perona, P., & Belongie, S. (2022). CUB-200-2011 (1.0) [Data set]. CaltechDATA. https://doi.org/10.22002/D1.20098
 - **CUB-200-2011 Segmentations**:  Farrell, R. (2022). CUB-200-2011 Segmentations (1.0) [Data set]. CaltechDATA. https://doi.org/10.22002/D1.20097
 - **ChestX-ray14**: Xiaosong Wang, Yifan Peng, Le Lu, Zhiyong Lu, MohammadhadiBagheri, Ronald M. Summers.ChestX-ray8: Hospital-scale Chest X-ray Database and Benchmarks on Weakly-Supervised Classification and Localization of Common Thorax Diseases, IEEE CVPR, pp. 3462-3471,2017
@@ -72,12 +76,11 @@ conda activate protopnet
 └── visualization          // script for plotting
 ```
 
-
 ## Data preparation
 
 ### CUB-200
 
-1. Download the dataset [CUB-200-2011](https://www.vision.caltech.edu/datasets/cub_200_2011/) 
+1. Download the dataset [CUB-200-2011](https://www.vision.caltech.edu/datasets/cub_200_2011/)
 from https://data.caltech.edu/records/20098 (1.1 GB).
 2. Extract `CUB_200_2011.tgz` in the `datasets` folder.
 3. Download the image masks from https://data.caltech.edu/records/20097
@@ -92,6 +95,7 @@ python data_preprocessing.py --seed 0 bird -i datasets/CUB_200_2011 --classes 00
 ```
 
 The data pipeline performs the following operations:
+
  1. Crop the images using information from `bounding_boxes.txt` (included in the dataset)
  2. Split the cropped images into training and test sets, using `train_test_split.txt` (included in the dataset)
  3. Put the cropped training images in the directory `./datasets/cub200_cropped/train_cropped/`
@@ -109,10 +113,10 @@ python data_preprocessing.py cub200_shuffled_bg
 The scripts, in addition to the operations from 1 to 5 in the previous section,
 change the backgrounds of the test set images by shifting the background of one class to
 the next one (e.g., the background of class 1 becomes the background of class 2).
-A the end of the process, the modified images are placed in the directory 
+A the end of the process, the modified images are placed in the directory
 `./datasets/cub200_cropped/test_cropped_shuffled`.
 
-At the end of the data preparation, you should have the following structure 
+At the end of the data preparation, you should have the following structure
 in the `dataset` folder
 
 ```
@@ -128,11 +132,11 @@ in the `dataset` folder
 
 ### COVID datasets
 
-Data processing of the COVID data set is based on the code of the paper 
+Data processing of the COVID data set is based on the code of the paper
 "[_AI for radiographic COVID-19 detection selects shortcuts over signal_](https://doi.org/10.1101/2020.09.13.20193565)".
 Follow the instruction in the README.md of the repository https://github.com/suinleelab/cxr_covid.
-Use the scripts `make_csv_bimcv_negative.py ` and `make_h5.py` of this repository 
-instead of the ones in the original repository. 
+Use the scripts `make_csv_bimcv_negative.py` and `make_h5.py` of this repository
+instead of the ones in the original repository.
 Put the resulting `*.h5` in the corresponding folders in the `datasets/covid` folder.
 
 Only a subset of the data has been used, see the following list of which parts have been downloaded:
@@ -159,12 +163,12 @@ Only a subset of the data has been used, see the following list of which parts h
 
 ### Training
 
-Configurations are managed by [Hydra](https://hydra.cc/) and a basic tutorial 
+Configurations are managed by [Hydra](https://hydra.cc/) and a basic tutorial
 can be found [here](https://hydra.cc/docs/tutorials/basic/your_first_app/simple_cli/).
 The structure of the configuration is  in `settings.py`, which contains the default values.
 The actual hyperparameters used for each experiment are in the `conf` folder.
 
-Run `main.py` passing the following arguments: 
+Run `main.py` passing the following arguments:
 
 - `experiment_name=<<NAME_OF_THE_EXPERIMENT>>` choose an experiment name
 - `+experiment=natural_base` load a configuration file from the `conf` directory
@@ -190,7 +194,6 @@ python main.py --cfg job
 The experiments can be tracked on [Weights and Biases](https://wandb.ai/). To enable this
 feature, add `wandb=true` to the command line when running the script.
 
-
 ## Evaluation
 
 ```bash
@@ -198,15 +201,15 @@ feature, add `wandb=true` to the command line when running the script.
 ```
 
 Substitute `PATH-TO-MODEL` with the path to the model you want to analyze.
-Specify the list of (0-based) index of the classes to use for the evaluation 
+Specify the list of (0-based) index of the classes to use for the evaluation
 (Cub200: "0 8 14 6 15", Covid dataset: "0 1").
 
 The script performs the following operations:
-  - plot the statistics of the experiment;
-  - plot the prototypes projected at the same epoch of the supplied model;
-  - find the nearest patches to each prototype
-  - plot a grid of the nearest patches
 
+- plot the statistics of the experiment;
+- plot the prototypes projected at the same epoch of the supplied model;
+- find the nearest patches to each prototype
+- plot a grid of the nearest patches
 
 ## Reproducibility
 
@@ -217,6 +220,7 @@ The script performs the following operations:
 ```
 
 ***
+
 ### Experiment 2
 
 #### ProtoPDebug
@@ -237,42 +241,44 @@ Since human intervention is required in the debugging loop, follow these steps t
       ```bash
       python global_analysis.py <PATH-TO-MODEL>
       ```
-   
+
       _b)_ manually select the patches that represent the confounds you want to forbid
 
       ```bash
       python extract_confound.py interactive <PATH-TO-MODEL> -classes 0 8 14 6 15 -n-img 10
       ```
-   
+
       Only the prototypes of the specified classes are presented for the debugging step.
       (See main paper for the details on how have been selected these 5 classes).
       The command extracts the most activated patches from the most activate images of
       each prototype associated to the 5 classes.
       For each patch, you will have to choose one of these options:
+
       - `y` (yes) the prototype activation overlays _exclusively (or very nearly so) the background_.
          The activation cut-out is added to the _forbidden concepts_
-      - `n` (next) the prototype activation overlays _some part of the bird_. 
+      - `n` (next) the prototype activation overlays _some part of the bird_.
         No action is performed and go to the next patch
       - `r` (remember) the prototype activation overlays some part of the bird and the concept
         is added to the concepts to be _remembered_ (useful when you use the remembering loss).
-      
+
       The cut-out of the selected patched are placed in two folders `tmp_forbidden_conf` and `tmp_remember_patch`,
       inside the experiment folder.
-      The patches from the images selected with _y_ or _r_ must be extracted manually 
+      The patches from the images selected with _y_ or _r_ must be extracted manually
       and saved in the same folder.
-      
+
       _c)_ move the patches in the dataset folder
 
       ```bash
       python extract_confound.py move <PATH-TO-MODEL-FOLDER>
       ```
+
       The script takes the patches in `tmp_forbidden_conf` and `tmp_remember_patch` (the
       filenames must contain class, prototype and image id formatted like `c=0_p=1_i=2.png`)
-      and adds them to `datasets/cub200_cropped/clean_top_20/forbidden_prototypes` and 
+      and adds them to `datasets/cub200_cropped/clean_top_20/forbidden_prototypes` and
       `datasets/cub200_cropped/clean_top_20/remembering_prototypes` respectively.
 
 3. **Subsequent rounds**, with the supervision on the confounds. The training will start
-   from the model of the previous round by substituting 
+   from the model of the previous round by substituting
    `<<PATH_TO_MODEL>>` with the path to the saved model of the previous round.
 
    ```bash
@@ -280,7 +286,6 @@ Since human intervention is required in the debugging loop, follow these steps t
    ```
 
 4. Go back to 2) and repeat.
-
 
 #### IAIA-BL, ProtoPNet clean, ProtoPNet
 
@@ -291,11 +296,13 @@ Run:
 ```
 
 ***
+
 ### Experiment 3
 
 Follow the same steps of Experiment 2
 
 First round:
+
 ```bash
 python main.py experiment_name=first_round +experiment=covid_base
 ```
@@ -307,26 +314,28 @@ python main.py experiment_name=\"second_round\"
                     +experiment=covid_aggregation
                     debug.path_to_model=\"<PATH_TO_MODEL>\"
 ```
+
 ***
+
 ### User experiment
 
-The generated images and the answers of the experiment with real user are in the 
-`user_experiment` folder. The csv files contains the answers for each image: 
+The generated images and the answers of the experiment with real user are in the
+`user_experiment` folder. The csv files contains the answers for each image:
 
 - 1: 'some part of the bird'
 - 0: 'exclusively (or very nearly so) the background'
 
-The image names follow the pattern 
+The image names follow the pattern
 `<number_of_the_question>Hexp_c=<idx_of_the_class>_p=<idx_of_the_prototype>_i=<idx_of_the_image>.png`.
 For instance, `01Hexp_c=0_p=0_i=2_c.png`.
 The folder `user_experiment/cuts` contains the cut-out for each image.
 
-
 ***
+
 ### Results
 
-The learned models can be accessed on Zenodo at https://zenodo.org/record/7181267. 
-The zip file contains the models for each of the three experiments. 
+The learned models can be accessed on Zenodo at https://zenodo.org/record/7181267.
+The zip file contains the models for each of the three experiments.
 These files can be found in the run folders:
 
 - `config.json`: configuration file
@@ -346,12 +355,12 @@ To reproduce the figures in the paper, run
 ## How to cite
 
 ```bibtex
-@article{bontempelli2022concept,
-  title={Concept-level Debugging of Part-Prototype Networks},
-  author={Bontempelli, Andrea and Teso, Stefano and Giunchiglia, Fausto and Passerini, Andrea},
-  url = {https://arxiv.org/abs/2205.15769},
-  doi = {10.48550/ARXIV.2205.15769},
-  journal={arXiv preprint arXiv:2205.15769},
-  year={2022}
+@inproceedings{
+   bontempelli2023conceptlevel,
+   title={Concept-level Debugging of Part-Prototype Networks},
+   author={Andrea Bontempelli and Stefano Teso and Katya Tentori and Fausto Giunchiglia and Andrea Passerini},
+   booktitle={The Eleventh International Conference on Learning Representations },
+   year={2023},
+   url={https://openreview.net/forum?id=oiwXWPDTyNk}
 }
 ```
